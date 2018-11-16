@@ -1,0 +1,24 @@
+{
+  "name": "side-project-azywong",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://azywong@github.com/CS601-F18/side-project-azywong.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CS601-F18/side-project-azywong/issues"
+  },
+  "homepage": "https://github.com/CS601-F18/side-project-azywong#readme",
+  "dependencies": {
+    "d3": "^5.7.0",
+    "express": "^4.16.4",
+    "redis": "^2.8.0"
+  }
+}
