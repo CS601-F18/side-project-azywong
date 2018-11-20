@@ -1,4 +1,9 @@
 $(document).ready(function() {
+
+  $(".todo-item input[type=checkbox]").change(toggleTodo)
+  $(".todo-item button").click(deleteTodo)
+
+
   $(".todo-form form").submit(function (e) {
     e.preventDefault();
     var text = $(".todo-form input[type=text]").val().trim();
@@ -23,9 +28,21 @@ $(document).ready(function() {
     //clear input
     $(".todo-form input[type=text]").val("");
   });
-	$(".todo-item input[type=checkbox]").change(toggleTodo)
-	$(".todo-item button").click(deleteTodo)
+
+  $("#addModal form").submit(function (e) {
+    e.preventDefault();
+    var dateTime = $("#addModal form input[name=dateTime]").val().trim();
+    var title = $("#addModal form input[name=title]").val().trim();
+    if (dateTime.length > 0 && title.length > 0) {
+    	//append event if its this week
+    	//post event
+    }
+  })
 })
+
+function deleteEvent() {
+
+}
 
 
 function deleteTodo () {
@@ -43,7 +60,23 @@ function deleteTodo () {
 function toggleTodo () {
 	if(this.checked) {
 		$(this).parent().addClass("inactive");
+		$.ajax({
+			method: "PUT",
+			url: "/todo",
+			data: { id: $(this).parent().attr("todoId"), checked: true }
+		})
+		.done(function( msg ) {
+			console.log(msg);
+		});
 	} else {
 		$(this).parent().removeClass("inactive");
+		$.ajax({
+			method: "PUT",
+			url: "/todo",
+			data: { id: $(this).parent().attr("todoId"), checked: false }
+		})
+		.done(function( msg ) {
+			console.log(msg);
+		});
 	}
 }

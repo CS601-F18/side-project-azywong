@@ -223,7 +223,24 @@ app.post('/todo', (req, res) => {
 });
 
 app.put('/todo', (req, res) => {
-
+  if (req.session.user && req.cookies.user_sid && req.body) {
+    models.Todo.update({
+      checked: req.body.checked
+    },{
+      where: {
+        id: req.body.id,
+        UserId: req.session.user
+      }
+    })
+    .then(message => {
+      res.json( { status: "success", message: message } );
+    })
+    .catch(error => {
+      res.json( { status: "error", message: error } );
+    });
+  } else {
+    res.json( { status: "error" } );
+  }
 });
 
 app.delete('/todo', (req, res) => {

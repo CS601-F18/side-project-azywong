@@ -3,32 +3,38 @@ extends layout.pug
 block content
 	if authenticated && todos && events
 		div(class="col-sm-2 day-container")
-			div(class="day")
+			div(class="day" startdate=events.monday.startdate enddate=events.monday.enddate)
 				h2="monday"
 					each event in events.monday.events
-						div(class="event")=event.title
-			div(class="day")
+						div(class="event" id=event.id)=event.title
+							button(class='delete')="x"
+			div(class="day" startdate=events.tuesday.startdate enddate=events.tuesday.enddate)
 				h2="tuesday"
 					each event in events.tuesday.events
-						div(class="event")=event.title
+						div(class="event" id=event.id)=event.title
+							button(class='delete')="x"
 		div(class="col-sm-2 day-container")
-			div(class="day")
+			div(class="day" startdate=events.wednesday.startdate enddate=events.wednesday.enddate)
 				h2="wednesday"
 					each event in events.wednesday.events
-						div(class="event")=event.title
-			div(class="day")
+						div(class="event" id=event.id)=event.title
+							button(class='delete')="x"
+			div(class="day" startdate=events.thursday.startdate enddate=events.thursday.enddate)
 				h2="thursday"
 					each event in events.thursday.events
-						div(class="event")=event.title
+						div(class="event" id=event.id)=event.title
+							button(class='delete')="x"
 		div(class="col-sm-2 day-container")
-			div(class="day")
+			div(class="day" startdate=events.friday.startdate enddate=events.friday.enddate)
 				h2="friday"
 					each event in events.friday.events
-						div(class="event")=event.title
-			div(class="day")
+						div(class="event" id=event.id)=event.title
+							button(class='delete')="x"
+			div(class="day" startdate=events.weekend.startdate enddate=events.weekend.enddate)
 				h2="weekend"
 					each event in events.weekend.events
-						div(class="event")=event.title
+						div(class="event" id=event.id)=event.title
+							button(class='delete')="x"
 	div(class="col-sm-5")
 		div(class="todo-list")
 			h2="todo list"
@@ -36,11 +42,18 @@ block content
 				form(action="/todo" method="post")
 					input(type="text" name="todo-item" placeholder="new todo item...")
 			each todo in todos
-				div(class='todo-item' todoId=todo.id)
-					input(type='checkbox' checked=todo.status)
-					span=todo.description
-					button(class='delete')
-						i(class='fas fa-trash-alt')
+				if todo.checked
+					div(class='todo-item inactive' todoId=todo.id)
+						input(type='checkbox' checked=todo.checked)
+						span=todo.description
+						button(class='delete')
+							i(class='fas fa-trash-alt')
+				else
+					div(class='todo-item' todoId=todo.id)
+						input(type='checkbox' checked=todo.checked)
+						span=todo.description
+						button(class='delete')
+							i(class='fas fa-trash-alt')
 
 	div(class="col-sm-1 add")
 		button(type="button" class="btn" data-toggle="modal" data-target="#addModal")

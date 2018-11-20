@@ -25,9 +25,10 @@ html
 						h5(class="modal-title" id="addModalLabel")="Add Event"
 					div(class="modal-body")
 						form
-							input(type="datetime-local" name="date-time")
-							input(type="text" name="title" placeholder="title")
-							input(type="text" name="description" placeholder="optional details")
+							div
+								input(type="datetime-local" name="dateTime")
+							div
+								input(type="text" name="title" placeholder="title")
 					div(class="modal-footer")
 						button(type="button" class="btn btn-secondary" data-dismiss="modal")="Close"
 
