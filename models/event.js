@@ -1,11 +1,15 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     var Event = sequelize.define('Event', {
-        status: {
-            type: DataTypes.STRING,
+        startdate: {
+            type: DataTypes.DATE,
             allowNull: false
         },
-        description: {
+        enddate: {
+            type: DataTypes.DATE,
+            allowNull: false
+        },
+        title: {
             type: DataTypes.STRING,
             allowNull: false
         }

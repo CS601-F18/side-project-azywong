@@ -1,8 +1,8 @@
 'use strict';
 module.exports = (sequelize, DataTypes) => {
     var Todo = sequelize.define('Todo', {
-        status: {
-            type: DataTypes.STRING,
+        checked: {
+            type: DataTypes.BOOLEAN,
             allowNull: false
         },
         description: {

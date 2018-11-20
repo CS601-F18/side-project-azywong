@@ -1,11 +1,37 @@
 html
 	head
-	title="TodoCal"
+		title="Weekly Todo Calendar"
+		meta(charset="utf-8")
+		meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+		link(rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway:400,300,600")
+		link(rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato")
+		link(rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous")
+		link(rel="stylesheet" type="text/css" href="/css/bootstrap.min.css")
+		link(rel="stylesheet" type="text/css" href="/css/styles.css")
 	body
-		header
-			if authenticated
-				a(href="/logout")= "logout"
-			else
-				a(href="/signup")= "signup"
-				a(href="/login")= "login"
-		block content
+		div(class="container")
+			div(class="row")
+				if authenticated
+					a(href="/logout")= "logout"
+				else
+					a(href="/signup")= "signup"
+					a(href="/login")= "login"
+			div(class="row")
+				block content
+		div(class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true")
+			div(class="modal-dialog" role="document")
+				div(class="modal-content")
+					div(class="modal-header")
+						h5(class="modal-title" id="addModalLabel")="Add Event"
+					div(class="modal-body")
+						form
+							input(type="datetime-local" name="date-time")
+							input(type="text" name="title" placeholder="title")
+							input(type="text" name="description" placeholder="optional details")
+					div(class="modal-footer")
+						button(type="button" class="btn btn-secondary" data-dismiss="modal")="Close"
+
+		script(src="js/jquery-3.3.1.min.js")
+		script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous")
+		script(src="js/bootstrap.min.js")
+		script(src="js/index.js")

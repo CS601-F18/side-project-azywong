@@ -1,4 +1,47 @@
 extends layout.pug
 
 block content
-	h1="dashboard"
+	if authenticated && todos && events
+		div(class="col-sm-2 day-container")
+			div(class="day")
+				h2="monday"
+					each event in events.monday.events
+						div(class="event")=event.title
+			div(class="day")
+				h2="tuesday"
+					each event in events.tuesday.events
+						div(class="event")=event.title
+		div(class="col-sm-2 day-container")
+			div(class="day")
+				h2="wednesday"
+					each event in events.wednesday.events
+						div(class="event")=event.title
+			div(class="day")
+				h2="thursday"
+					each event in events.thursday.events
+						div(class="event")=event.title
+		div(class="col-sm-2 day-container")
+			div(class="day")
+				h2="friday"
+					each event in events.friday.events
+						div(class="event")=event.title
+			div(class="day")
+				h2="weekend"
+					each event in events.weekend.events
+						div(class="event")=event.title
+	div(class="col-sm-5")
+		div(class="todo-list")
+			h2="todo list"
+			div(class="todo-form")
+				form(action="/todo" method="post")
+					input(type="text" name="todo-item" placeholder="new todo item...")
+			each todo in todos
+				div(class='todo-item' todoId=todo.id)
+					input(type='checkbox' checked=todo.status)
+					span=todo.description
+					button(class='delete')
+						i(class='fas fa-trash-alt')
+
+	div(class="col-sm-1 add")
+		button(type="button" class="btn" data-toggle="modal" data-target="#addModal")
+			i(class="fas fa-3x fa-plus-circle")
