@@ -1,0 +1,11 @@
+html
+	head
+	title="TodoCal"
+	body
+		header
+			if authenticated
+				a(href="/logout")= "logout"
+			else
+				a(href="/signup")= "signup"
+				a(href="/login")= "login"
+		block content

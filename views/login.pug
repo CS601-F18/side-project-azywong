@@ -1,0 +1,12 @@
+extends layout.pug
+
+block content
+	h1="login"
+	form(action="/login" method="post")
+		div
+			input(type="text" name="username")
+
+		div
+			input(type="password" name="password")
+		div
+			input(type="submit")
