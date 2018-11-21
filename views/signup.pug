@@ -1,12 +1,14 @@
 extends layout.pug
 
 block content
-	h1="signup"
-	form(action="/signup" method="post")
-		div
-			input(type="text" name="username" required)
+	div(class="row justify-content-md-center")
+		h1="signup"
+	div(class="row justify-content-md-center")
+		form(action="/signup" method="post")
+			div(class="form-group")
+				input(type="text" class="form-control" name="username" required)
 
-		div
-			input(type="password" name="password" required)
-		div
-			input(type="submit")
+			div(class="form-group")
+				input(type="password" class="form-control" name="password" required)
+			div(class="form-group")
+				input(type="submit" class="btn btn-secondary btn-block")

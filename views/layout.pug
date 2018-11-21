@@ -12,25 +12,34 @@ html
 		div(class="container")
 			div(class="row")
 				if authenticated
-					a(href="/logout")= "logout"
+					a(href="/logout" class="btn btn-outline-secondary")= "logout"
 				else
-					a(href="/signup")= "signup"
-					a(href="/login")= "login"
-			div(class="row")
-				block content
+					a(href="/signup" class="btn btn-outline-secondary")= "signup"
+					a(href="/login" class="btn btn-outline-secondary")= "login"
+			if error
+				div(class="row justify-content-md-center")
+					div(class="alert alert-warning alert-dismissible fade show" role="alert")
+						p=error
+						button(type="button" class="close" data-dismiss="alert" aria-label="Close")
+							span(aria-hidden="true")="X"
+			block content
 		div(class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true")
 			div(class="modal-dialog" role="document")
 				div(class="modal-content")
 					div(class="modal-header")
 						h5(class="modal-title" id="addModalLabel")="Add Event"
 					div(class="modal-body")
+						h3="add an event"
 						form(action="/event" method="POST")
-							div
-								input(type="date" name="startdate" required)
-							div
-								input(type="date" name="enddate" required)
-							div
-								input(type="text" name="title" placeholder="title" required)
+							div(class="form-group")
+								label="event start date"
+								input(type="date" class="form-control" name="startdate" required)
+							div(class="form-group")
+								label="event end date"
+								input(type="date" class="form-control" name="enddate" required)
+							div(class="form-group")
+								label="event title"
+								input(type="text" class="form-control" name="title" placeholder="title" required)
 							div
 								input(type="submit" class="btn btn-primary")
 					div(class="modal-footer")

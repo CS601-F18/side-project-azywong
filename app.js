@@ -71,7 +71,7 @@ app.get('/', sessionChecker, (req, res) => {
 **/
 app.route('/signup')
     .get(sessionChecker, (req, res) => {
-        res.render('signup', { authenticated: false });
+        res.render('signup', { authenticated: false, error: req.query.error });
     })
     .post((req, res) => {
         models.User.create({
@@ -80,17 +80,17 @@ app.route('/signup')
         })
         .then(user => {
             req.session.user = user.dataValues;
-            res.redirect('/dashboard');
+            res.redirect("/dashboard");
         })
         .catch(error => {
-            res.redirect('/signup', { error: "unable to signup" });
+            res.redirect("/signup?error=" + encodeURIComponent("unable to signup"));
         });
     });
 
 // route for login
 app.route('/login')
     .get(sessionChecker, (req, res) => {
-        res.render('login', { authenticated: false })
+        res.render('login', { authenticated: false, error: req.query.error })
     })
     .post((req, res) => {
         var username = req.body.username,
@@ -98,9 +98,9 @@ app.route('/login')
 
         models.User.findOne({ where: { username: username } }).then(function (user) {
             if (!user) {
-                res.redirect('/login');
+                res.redirect('/login?error=' + encodeURIComponent("user not found"));
             } else if (!validPassword(password, user.password)) {
-                res.redirect('/login');
+                res.redirect('/login?error=' + encodeURIComponent("invalid credentials"));
             } else {
                 req.session.user = user.id;
                 res.redirect('/dashboard');
