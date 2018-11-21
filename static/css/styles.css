@@ -57,11 +57,13 @@ h2 {
   padding: 3px;
   margin-top: 3px;
   height: 25px;
+  position: relative;
 }
 
 .event-title {
 	width: 95%;
 	overflow: hidden;
+	height: 25px;
 	position: relative;
 }
 
@@ -93,4 +95,15 @@ h2 {
 }
 .inactive {
   color: lightgray;
+}
+
+.day h2 span.date {
+	color: gray;
+	font-size: 10px;
+	margin-left: 5px;
+}
+h1.center-header {
+	display: block;
+	width: 100%;
+	text-align: center;
 }

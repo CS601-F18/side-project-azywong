@@ -125,7 +125,6 @@ app.get('/dashboard', (req, res) => {
           }).then(function(events) {
             var orderedEvents = utils.orderEvents(events, thisWeek);
             var orderedTodos = utils.orderTodos(todos);
-            console.log(orderedTodos);
             console.log(orderedEvents);
             res.render('dashboard', { authenticated: true, todos: orderedTodos, events: orderedEvents, error: req.query.error});
           })
@@ -219,18 +218,24 @@ app.route('/event')
   })
   .post((req, res, next) => {
     if (req.body.startdate && req.body.enddate && req.body.title) {
-      models.Event.create({
-        startdate: req.body.startdate,
-        enddate: req.body.enddate,
-        title: req.body.title,
-        UserId: req.session.user
-      })
-      .then(message => {
-        res.redirect("/dashboard");
-      })
-      .catch(error => {
+      console.log(req.body)
+      if( req.body.startdate <= req.body.enddate) {
+        models.Event.create({
+          startdate: req.body.startdate,
+          enddate: req.body.enddate,
+          title: req.body.title,
+          UserId: req.session.user
+        })
+        .then(message => {
+          res.redirect("/dashboard");
+        })
+        .catch(error => {
+          res.redirect("/dashboard" + "?error=" + encodeURIComponent(error));
+        });
+      } else {
+        var error = "startdate must be after end date!"
         res.redirect("/dashboard" + "?error=" + encodeURIComponent(error));
-      });
+      }
     } else {
       var error = "invalid parameters"
       res.redirect("/dashboard" + "?error=" + encodeURIComponent(error));
