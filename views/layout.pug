@@ -24,11 +24,15 @@ html
 					div(class="modal-header")
 						h5(class="modal-title" id="addModalLabel")="Add Event"
 					div(class="modal-body")
-						form
+						form(action="/event" method="POST")
 							div
-								input(type="datetime-local" name="dateTime")
+								input(type="date" name="startdate" required)
 							div
-								input(type="text" name="title" placeholder="title")
+								input(type="date" name="enddate" required)
+							div
+								input(type="text" name="title" placeholder="title" required)
+							div
+								input(type="submit" class="btn btn-primary")
 					div(class="modal-footer")
 						button(type="button" class="btn btn-secondary" data-dismiss="modal")="Close"
 

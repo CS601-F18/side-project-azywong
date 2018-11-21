@@ -8,6 +8,7 @@ var env       = process.env.NODE_ENV || 'development';
 var config    = require(__dirname + '/../config.js')[env];
 var db        = {};
 
+// TODO: change this to read from config file
 var sequelize = new Sequelize('postgres://postgres@localhost:5432/todocal');
 
 fs

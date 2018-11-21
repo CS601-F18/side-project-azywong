@@ -4,9 +4,9 @@ block content
 	h1="signup"
 	form(action="/signup" method="post")
 		div
-			input(type="text" name="username")
+			input(type="text" name="username" required)
 
 		div
-			input(type="password" name="password")
+			input(type="password" name="password" required)
 		div
 			input(type="submit")

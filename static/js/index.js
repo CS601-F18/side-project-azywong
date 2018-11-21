@@ -28,16 +28,6 @@ $(document).ready(function() {
     //clear input
     $(".todo-form input[type=text]").val("");
   });
-
-  $("#addModal form").submit(function (e) {
-    e.preventDefault();
-    var dateTime = $("#addModal form input[name=dateTime]").val().trim();
-    var title = $("#addModal form input[name=title]").val().trim();
-    if (dateTime.length > 0 && title.length > 0) {
-    	//append event if its this week
-    	//post event
-    }
-  })
 })
 
 function deleteEvent() {

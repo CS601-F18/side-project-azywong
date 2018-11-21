@@ -7,80 +7,8 @@ var config       = require('./config')
   , session      = require('express-session')
   , models = require('./models/index.js')
   , bcrypt = require('bcrypt')
-  , salt = bcrypt.genSaltSync();
-
-var validPassword = function (password, saved) {
-  return bcrypt.compareSync(password, saved);
-}
-
-var orderTodos = function (todos) {
-  var orderedTodos = [];
-  for (var i = 0; i < todos.length; i++) {
-    orderedTodos.push(todos[i].dataValues);
-  };
-  return orderedTodos;
-}
-
-var orderEvents = function (events, thisWeek) {
-  var newEvents = {
-    monday: {
-      startdate: new Date(thisWeek[0].setHours(0,0,0)),
-      enddate: new Date(thisWeek[0].setHours(23,59,59)),
-      events: []
-    },
-    tuesday: {
-      startdate: new Date(thisWeek[1].setHours(0,0,0)),
-      enddate: new Date(thisWeek[1].setHours(23,59,59)),
-      events: []
-    },
-    wednesday: {
-      startdate: new Date(thisWeek[2].setHours(0,0,0)),
-      enddate: new Date(thisWeek[2].setHours(23,59,59)),
-      events: []
-    },
-    thursday: {
-      startdate: new Date(thisWeek[3].setHours(0,0,0)),
-      enddate: new Date(thisWeek[3].setHours(23,59,59)),
-      events: []
-    },
-    friday: {
-      startdate: new Date(thisWeek[4].setHours(0,0,0)),
-      enddate: new Date(thisWeek[4].setHours(23,59,59)),
-      events: []
-    },
-    weekend: {
-      startdate: new Date(thisWeek[5].setHours(0,0,0)),
-      enddate: new Date(thisWeek[5].setHours(23,59,59)),
-      events: []
-    }
-  }
-
-  for (var i = 0; i < events.length; i++) {
-    var event = events[i].dataValues;
-    Object.keys(newEvents).forEach(function (key) {
-      if (event.startdate >= newEvents[key].startdate && event.enddate <= newEvents[key].enddate) {
-        newEvents[key].events.push(event);
-      }
-    })
-  };
-  return newEvents;
-}
-
-
-var getThisWeek = function () {
-  var range = []
-  var d = new Date();
-  var day = d.getDay();
-  //https://stackoverflow.com/questions/4156434/javascript-get-the-first-day-of-the-week-from-current-date
-  var diff = d.getDate() - day + (day == 0 ? -6:1);
-
-  for (var i = 0; i < 7; i++) {
-    d = new Date();
-    d.setHours(0,0,0);
-    range.push(new Date(d.setDate(diff + i)))
-  }
-  return range;
-}
+  , salt = bcrypt.genSaltSync()
+  , utils = require('./utils');
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -99,7 +27,11 @@ app.use(session({
 app.set('view engine', 'pug');
 app.use(express.static(__dirname + '/static'));
 
-//clear cookie if user isn't set in session
+/**
+* Use this for all routes
+* if the user isn't set or cookie is invalid, clear the cookie
+* then pass handling to next
+**/
 app.use((req, res, next) => {
     if (req.cookies.user_sid && !req.session.user) {
         res.clearCookie('user_sid');
@@ -107,8 +39,11 @@ app.use((req, res, next) => {
     next();
 });
 
-// https://www.codementor.io/mayowa.a/how-to-build-a-simple-session-based-authentication-system-with-nodejs-from-scratch-6vn67mcy3
-// middleware function to check for logged-in users
+// referenced for middleware https://www.codementor.io/mayowa.a/how-to-build-a-simple-session-based-authentication-system-with-nodejs-from-scratch-6vn67mcy3
+/**
+* Middleware function that checks for logged in user
+* If the user is logged in and session is valid, it redirects to dashboard
+**/
 var sessionChecker = (req, res, next) => {
     if (req.session.user && req.cookies.user_sid) {
         res.redirect('/dashboard');
@@ -118,30 +53,37 @@ var sessionChecker = (req, res, next) => {
 };
 
 
-// route for index
+/**
+* Route for index
+* sessionChecker automatically checks for a logged in user
+* otherwise redirect to the login page
+**/
 app.get('/', sessionChecker, (req, res) => {
     res.redirect('/login');
 });
 
-// route for user signup
+/**
+* Route for signup page
+* sessionChecker automatically checks for a logged in user
+*
+* GET renders signup page
+* POST attempts to create a user
+**/
 app.route('/signup')
     .get(sessionChecker, (req, res) => {
         res.render('signup', { authenticated: false });
     })
     .post((req, res) => {
-
         models.User.create({
             username: req.body.username,
             password: bcrypt.hashSync(req.body.password, salt)
         })
         .then(user => {
-            console.log("reached post create user");
-            console.log(user.dataValues);
             req.session.user = user.dataValues;
             res.redirect('/dashboard');
         })
         .catch(error => {
-            res.redirect('/signup');
+            res.redirect('/signup', { error: "unable to signup" });
         });
     });
 
@@ -160,7 +102,6 @@ app.route('/login')
             } else if (!validPassword(password, user.password)) {
                 res.redirect('/login');
             } else {
-              console.log(user.dataValues);
                 req.session.user = user.id;
                 res.redirect('/dashboard');
             }
@@ -170,7 +111,7 @@ app.route('/login')
 // route for user's dashboard
 app.get('/dashboard', (req, res) => {
     if (req.session.user && req.cookies.user_sid) {
-        var thisWeek = getThisWeek();
+        var thisWeek = utils.getThisWeek();
 
         models.Todo.findAll({ where: { UserId: req.session.user } }).then(function (todos) {
           models.Event.findAll(
@@ -182,11 +123,11 @@ app.get('/dashboard', (req, res) => {
                 }
               }
           }).then(function(events) {
-            var orderedEvents = orderEvents(events, thisWeek);
-            var orderedTodos = orderTodos(todos);
+            var orderedEvents = utils.orderEvents(events, thisWeek);
+            var orderedTodos = utils.orderTodos(todos);
             console.log(orderedTodos);
             console.log(orderedEvents);
-            res.render('dashboard', { authenticated: true, todos: orderedTodos, events: orderedEvents});
+            res.render('dashboard', { authenticated: true, todos: orderedTodos, events: orderedEvents, error: req.query.error});
           })
         });
     } else {
@@ -204,71 +145,115 @@ app.get('/logout', (req, res) => {
     }
 });
 
-app.post('/todo', (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.body) {
-    models.Todo.create({
-      checked: false,
-      description: req.body.todo,
-      UserId: req.session.user
-    })
-    .then(todo => {
-      res.json( { status: "success", message: todo } );
-    })
-    .catch(error => {
-      res.json( { status: "error", message: error } );
-    });
-  } else {
-    res.json( { status: "error" } );
-  }
-});
-
-app.put('/todo', (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.body) {
-    models.Todo.update({
-      checked: req.body.checked
-    },{
-      where: {
-        id: req.body.id,
+app.route('/todo')
+  .all((req, res, next) => {
+    if (req.session.user && req.cookies.user_sid && req.body) {
+      next();
+    } else {
+      res.json( { error: "not authenticated or missing req.body" } );
+    }
+  })
+  .post((req, res, next) => {
+    if (req.body.todo) {
+      models.Todo.create({
+        checked: false,
+        description: req.body.todo,
         UserId: req.session.user
-      }
-    })
-    .then(message => {
-      res.json( { status: "success", message: message } );
-    })
-    .catch(error => {
-      res.json( { status: "error", message: error } );
-    });
-  } else {
-    res.json( { status: "error" } );
-  }
-});
+      })
+      .then(todo => {
+        res.json( { message: todo } );
+      })
+      .catch(error => {
+        res.json( { error: "error entering in db", message: error } );
+      });
+    } else {
+      res.json( { error: "error missing inputs" } );
+    }
+  })
+  .put((req, res, next) => {
+    if (req.body.id && req.body.checked) {
+      models.Todo.update({
+        checked: req.body.checked
+      },{
+        where: {
+          id: req.body.id,
+          UserId: req.session.user
+        }
+      })
+      .then(message => {
+        res.json( { message: message } );
+      })
+      .catch(error => {
+        res.json( { error: "error entering in db", message: error } );
+      });
+    } else {
+      res.json( { error: "error missing inputs" } );
+    }
+  })
+  .delete((req, res, next) => {
+    if (req.body.id) {
+      models.Todo.destroy({
+        where: {
+          id: req.body.id,
+          UserId: req.session.user
+        }
+      })
+      .then(message => {
+        res.json( { message: message } );
+      })
+      .catch(error => {
+        res.json( { error: "error deleting", message: error } );
+      });
+    } else {
+      res.json( { error: "error missing inputs" } );
+    }
+  });
 
-app.delete('/todo', (req, res) => {
-  if (req.session.user && req.cookies.user_sid && req.body) {
-    models.Todo.destroy({
-      where: {
-        id: req.body.id,
+app.route('/event')
+  .all((req, res, next) => {
+    if (req.session.user && req.cookies.user_sid && req.body) {
+      next();
+    } else {
+      res.json( { error: "not authenticated or missing req.body" } );
+    }
+  })
+  .post((req, res, next) => {
+    if (req.body.startdate && req.body.enddate && req.body.title) {
+      models.Event.create({
+        startdate: req.body.startdate,
+        enddate: req.body.enddate,
+        title: req.body.title,
         UserId: req.session.user
-      }
-    })
-    .then(message => {
-      res.json( { status: "success", message: message } );
-    })
-    .catch(error => {
-      res.json( { status: "error", message: error } );
-    });
-  } else {
-    res.json( { status: "error" } );
-  }
-});
-
-app.post('/event', (req, res) => {
-
-});
-
-app.delete('/event', (req, res) => {
-
-});
+      })
+      .then(message => {
+        res.redirect("/dashboard");
+      })
+      .catch(error => {
+        res.redirect("/dashboard" + "?error=" + encodeURIComponent(error));
+      });
+    } else {
+      var error = "invalid parameters"
+      res.redirect("/dashboard" + "?error=" + encodeURIComponent(error));
+    }
+  })
+  .delete((req, res, next) => {
+    if (req.body.id) {
+      models.Event.destroy({
+        where: {
+          id: req.body.id,
+          UserId: req.session.user
+        }
+      })
+      .then(message => {
+        res.json( { message: message } );
+      })
+      .catch(error => {
+        res.json( { error: "error deleting", message: error } );
+      });
+    } else {
+      res.json( { error: "error missing inputs" } );
+    }
+  });
 
 
 // route for handling 404 requests
@@ -283,3 +268,6 @@ models.sequelize.sync().then(function() {
   })
 })
 
+var validPassword = function (password, saved) {
+  return bcrypt.compareSync(password, saved);
+}

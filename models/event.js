@@ -2,11 +2,11 @@
 module.exports = (sequelize, DataTypes) => {
     var Event = sequelize.define('Event', {
         startdate: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull: false
         },
         enddate: {
-            type: DataTypes.DATE,
+            type: DataTypes.DATEONLY,
             allowNull: false
         },
         title: {

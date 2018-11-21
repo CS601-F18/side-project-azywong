@@ -56,8 +56,20 @@ h2 {
   color: white;
   padding: 3px;
   margin-top: 3px;
+  height: 25px;
+  overflow: hidden;
 }
 
+.event button {
+	float: right;
+	border: 0;
+    margin: 0;
+    background-color: rgba(0,0,0,0);
+}
+
+.event button i {
+	color: rgba(255,255,255,0.5);
+}
 .inactive {
   color: lightgray;
 }
