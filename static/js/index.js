@@ -1,8 +1,8 @@
 $(document).ready(function() {
 
-  $(".todo-item input[type=checkbox]").change(toggleTodo)
-  $(".todo-item button").click(deleteTodo)
-
+  $(".todo-item input[type=checkbox]").change(toggleTodo);
+  $(".todo-item button").click(deleteTodo);
+  $(".event .delete").click(deleteEvent);
 
   $(".todo-form form").submit(function (e) {
     e.preventDefault();
@@ -31,7 +31,15 @@ $(document).ready(function() {
 })
 
 function deleteEvent() {
-
+	$(this).parent().remove();
+	$.ajax({
+			method: "DELETE",
+			url: "/event",
+			data: { id: $(this).parent().attr("id") }
+		})
+		.done(function( msg ) {
+			console.log(msg);
+		});
 }
 
 

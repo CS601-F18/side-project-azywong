@@ -79,7 +79,7 @@ app.route('/signup')
             password: bcrypt.hashSync(req.body.password, salt)
         })
         .then(user => {
-            req.session.user = user.dataValues;
+            req.session.user = user.id;
             res.redirect("/dashboard");
         })
         .catch(error => {
