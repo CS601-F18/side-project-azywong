@@ -1,5 +1,4 @@
-var config       = require('./config')
-  , express      = require('express')
+var express      = require('express')
   , http         = require('http')
   , port         = process.argv[2] || 8000
   , bodyParser   = require('body-parser')
@@ -149,7 +148,8 @@ app.route('/todo')
     if (req.session.user && req.cookies.user_sid && req.body) {
       next();
     } else {
-      res.json( { error: "not authenticated or missing req.body" } );
+      var error = "not authenticated or missing req.body"
+      res.redirect("/dashboard" + "?error=" + encodeURIComponent(error));
     }
   })
   .post((req, res, next) => {
@@ -213,7 +213,8 @@ app.route('/event')
     if (req.session.user && req.cookies.user_sid && req.body) {
       next();
     } else {
-      res.json( { error: "not authenticated or missing req.body" } );
+      var error = "not authenticated or missing req.body"
+      res.redirect("/dashboard" + "?error=" + encodeURIComponent(error));
     }
   })
   .post((req, res, next) => {

@@ -15,7 +15,6 @@ utils.getWeekHeader = function (week) {
 }
 
 utils.orderEvents = function (events, thisWeek) {
-  console.log(thisWeek)
   var newEvents = {
     header: utils.getWeekHeader(thisWeek),
     monday: {
