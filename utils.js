@@ -8,63 +8,75 @@ utils.orderTodos = function (todos) {
   return orderedTodos;
 }
 
-utils.monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-utils.getWeekHeader = function (week) {
-  return "Week of " + utils.monthNames[week[0].getUTCMonth()] + " " + week[0].getUTCDate() + " - " + utils.monthNames[week[6].getUTCMonth()] + " " + week[6].getUTCDate();
+utils.getMonthName = function (date) {
+  return utils.moment(date, 'YYYY-MM-DD').format('MMM');
 }
 
-utils.orderEvents = function (events, thisWeek) {
+utils.getDateName = function (date) {
+  return utils.moment(date, 'YYYY-MM-DD').format('D');
+}
+
+utils.getWeekHeader = function (week) {
+  return "Week of " + utils.getMonthName(week[0]) + " " + utils.getDateName(week[0]) + " - " + utils.getMonthName(week[6]) + " " + utils.getDateName(week[6]);
+}
+
+utils.getNewEvents = function (thisWeek){
   var newEvents = {
     header: utils.getWeekHeader(thisWeek),
     monday: {
-      date: thisWeek[0].getUTCDate(),
+      date: utils.getDateName(thisWeek[0]),
       startdate: utils.getStartDate(thisWeek[0]),
       enddate: utils.getEndDate(thisWeek[0]),
       events: []
     },
     tuesday: {
-      date: thisWeek[1].getUTCDate(),
+      date: utils.getDateName(thisWeek[1]),
       startdate: utils.getStartDate(thisWeek[1]),
       enddate: utils.getEndDate(thisWeek[1]),
       events: []
     },
     wednesday: {
-      date: thisWeek[2].getUTCDate(),
+      date: utils.getDateName(thisWeek[2]),
       startdate: utils.getStartDate(thisWeek[2]),
       enddate: utils.getEndDate(thisWeek[2]),
       events: []
     },
     thursday: {
-      date: thisWeek[3].getUTCDate(),
+      date: utils.getDateName(thisWeek[3]),
       startdate: utils.getStartDate(thisWeek[3]),
       enddate: utils.getEndDate(thisWeek[3]),
       events: []
     },
     friday: {
-      date: thisWeek[4].getUTCDate(),
+      date: utils.getDateName(thisWeek[4]),
       startdate: utils.getStartDate(thisWeek[4]),
       enddate: utils.getEndDate(thisWeek[4]),
       events: []
     },
     weekend: {
-      date: thisWeek[5].getUTCDate() + " - " + thisWeek[6].getUTCDate(),
+      date: utils.getDateName(thisWeek[5]) + " - " + utils.getDateName(thisWeek[6]),
       startdate: utils.getStartDate(thisWeek[5]),
       enddate: utils.getEndDate(thisWeek[6]),
       events: []
     }
   }
+  return newEvents;
+}
 
+utils.orderEvents = function (events, thisWeek) {
+  var newEvents = utils.getNewEvents(thisWeek);
   for (var i = 0; i < events.length; i++) {
     var event = events[i].dataValues;
-    var startdate = utils.moment(event.startdate);
-    startdate.hour(0).minute(0).second(0);
-    var enddate = utils.moment(event.enddate);
-    enddate.hour(23).minute(59).second(59);
+    var startdate = utils.moment(event.startdate, 'YYYY-MM-DD').startOf('day');
+    var enddate = utils.moment(event.enddate, 'YYYY-MM-DD').startOf('day');
 
     Object.keys(newEvents).forEach(function (key) {
-      if (startdate <= newEvents[key].startdate && enddate >= newEvents[key].enddate) {
-        newEvents[key].events.push(event);
+      var startdate2 = newEvents[key].startdate;
+      var enddate2 = newEvents[key].enddate;
+      if(startdate2 && enddate2) {
+        if ( startdate.isSameOrBefore(startdate2) && (enddate.isSameOrAfter(enddate2) || enddate.isSameOrAfter(startdate2)) ) {
+          newEvents[key].events.push(event);
+        }
       }
     })
   };
@@ -72,33 +84,31 @@ utils.orderEvents = function (events, thisWeek) {
 }
 
 utils.getFormattedDate = function (date) {
-  var month = date.getUTCMonth() + 1;
-  var day = date.getUTCDate();
-  var year = date.getFullYear();
-  return utils.moment(year + "-" + month + "-" + day);
+  return utils.moment(date, 'YYYY-MM-DD');
 }
 
 utils.moment = require('moment')
 
 utils.getStartDate = function (date) {
-  return utils.getFormattedDate(date).hour(0).minute(0).second(0)
+  return utils.getFormattedDate(date).startOf('day');
 }
 
 utils.getEndDate = function (date) {
-  return utils.getFormattedDate(date).hour(23).minute(59).second(59);
+  return utils.getFormattedDate(date).endOf('day');
 }
 
 utils.getThisWeek = function () {
   var range = []
   var d = new Date();
-  var day = d.getUTCDay();
+  var day = utils.moment().startOf('day').fromNow();
   //https://stackoverflow.com/questions/4156434/javascript-get-the-first-day-of-the-week-from-current-date
-  var diff = d.getUTCDate() - day + (day == 0 ? -6:1);
+  var startOfPeriod = utils.moment();
+  var begin = utils.moment(startOfPeriod).isoWeekday(1);
+  begin.startOf('isoWeek');
 
   for (var i = 0; i < 7; i++) {
-    d = new Date();
-    d.setUTCHours(0,0,0);
-    range.push(new Date(d.setUTCDate(diff + i)));
+    range.push(begin.format('YYYY-MM-DD'));
+    begin.add(1, 'd');
   }
   return range;
 }

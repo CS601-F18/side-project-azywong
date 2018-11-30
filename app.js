@@ -13,11 +13,9 @@ var express      = require('express')
   , sgMail = require('@sendgrid/mail');
 
 if (process.env.SENGRID_API_KEY == undefined) {
-  console.log("not found")
   var config = require('./config')
   sgMail.setApiKey(config.development.sendgrid);
 } else {
-  console.log("found")
   sgMail.setApiKey(process.env.SENGRID_API_KEY);
 }
 
@@ -131,7 +129,7 @@ app.get('/dashboard', (req, res) => {
               { UserId: req.session.user,
                 startdate: {
                   [models.Sequelize.Op.gte]: thisWeek[0],
-                  [models.Sequelize.Op.lte]: thisWeek[6].setHours(23,59,59)
+                  [models.Sequelize.Op.lte]: thisWeek[6]
                 }
               }
           }).then(function(events) {
@@ -316,14 +314,17 @@ app.route('/forgot_password')
               res.render('forgot_password', { authenticated: false, error: "Successfully sent reset email" });
             }).catch((err) => {
               console.log(err)
+              res.render('forgot_password', { authenticated: false, error: "Something went wrong!  Unable to send a reset email" });
             })
           }).catch((err) => {
             console.log(err)
+            res.render('forgot_password', { authenticated: false, error: "Something went wrong!  Unable to send a reset email" });
           })
         });
       }
     ], function(err) {
-      if (err) res.redirect('/forgot_password');
+      console.log(err);
+      res.render('forgot_password', { authenticated: false, error: "Something went wrong!  Unable to send a reset email" });
     });
   });
 
