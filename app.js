@@ -8,7 +8,6 @@ var express      = require('express')
   , bcrypt = require('bcrypt')
   , salt = bcrypt.genSaltSync()
   , utils = require('./utils')
-  , helper = require('sendgrid').mail
   , crypto = require('crypto')
   , async = require("async")
   , sgMail = require('@sendgrid/mail');
