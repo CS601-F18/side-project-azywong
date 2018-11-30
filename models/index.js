@@ -8,9 +8,13 @@ var env       = process.env.NODE_ENV || 'development';
 var db        = {};
 
 if (process.env.DATABASE_URL) {
-  var sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_BRONZE_URL, {
-      dialect:  'postgres',
-      protocol: 'postgres'
+  var sequelize = new Sequelize(process.env.DATABASE_URL, {
+      "dialect":  'postgres',
+      "protocol": 'postgres',
+      "ssl": true,
+        "dialectOptions": {
+            "ssl": true
+        }
     });
 } else {
   var config    = require(__dirname + '/../config.js')[env];
