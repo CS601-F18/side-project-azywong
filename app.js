@@ -12,11 +12,14 @@ var express      = require('express')
   , async = require("async")
   , sgMail = require('@sendgrid/mail');
 
+// send grid API key configuration
 if (process.env.SENGRID_API_KEY == undefined) {
   var config = require('./config')
   sgMail.setApiKey(config.development.sendgrid);
+  var secret = config.secret;
 } else {
   sgMail.setApiKey(process.env.SENGRID_API_KEY);
+  var secret = process.env.secret;
 }
 
 var app = express();
@@ -25,7 +28,7 @@ app.use(cookieParser());
 
 app.use(session({
     key: 'user_sid',
-    secret: 'secret',
+    secret: secret,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -97,7 +100,13 @@ app.route('/signup')
         });
     });
 
-// route for login
+/**
+* Route for login
+* sessionChecker automatically checks for a logged in user
+*
+* GET renders login page
+* POST attempts to authenticate user
+**/
 app.route('/login')
     .get(sessionChecker, (req, res) => {
         res.render('login', { authenticated: false, error: req.query.error })
@@ -118,7 +127,12 @@ app.route('/login')
         });
     });
 
-// route for user's dashboard
+
+/**
+* Route for dashboard page
+*
+* GET renders dashboard to a logged in user
+**/
 app.get('/dashboard', (req, res) => {
     if (req.session.user && req.cookies.user_sid) {
         var thisWeek = utils.getThisWeek();
@@ -135,7 +149,6 @@ app.get('/dashboard', (req, res) => {
           }).then(function(events) {
             var orderedEvents = utils.orderEvents(events, thisWeek);
             var orderedTodos = utils.orderTodos(todos);
-            console.log(orderedEvents);
             res.render('dashboard', { authenticated: true, todos: orderedTodos, events: orderedEvents, error: req.query.error});
           })
         });
@@ -144,7 +157,11 @@ app.get('/dashboard', (req, res) => {
     }
 });
 
-// route for logout
+/**
+* Route for logouter
+*
+* GET clears the session and redirects to login page
+**/
 app.get('/logout', (req, res) => {
     if (req.session.user && req.cookies.user_sid) {
         res.clearCookie('user_sid');
@@ -154,6 +171,14 @@ app.get('/logout', (req, res) => {
     }
 });
 
+/**
+* Route for todo
+*
+* Before all routes, ALL makes sure the user is logged in
+* POST attempts to create a todo for the user
+* PUT attempts to update a todo for the user
+* DELETE attempts to delete a todo for the user
+**/
 app.route('/todo')
   .all((req, res, next) => {
     if (req.session.user && req.cookies.user_sid && req.body) {
@@ -219,6 +244,13 @@ app.route('/todo')
     }
   });
 
+/**
+* Route for event page
+*
+* Before all routes, ALL checks for authenticated user
+* POST attenpts to create an event for user
+* DELETE attempts to delete the todo if it belongs to the user
+**/
 app.route('/event')
   .all((req, res, next) => {
     if (req.session.user && req.cookies.user_sid && req.body) {
@@ -271,6 +303,12 @@ app.route('/event')
     }
   });
 
+/**
+* Route for forgot password
+*
+* GET renders the forgot password page
+* POST attempts to find a user with the parameters, then send a reset email
+**/
 app.route('/forgot_password')
   .get((req, res, next) => {
     res.render('forgot_password', { authenticated: false });
@@ -328,6 +366,12 @@ app.route('/forgot_password')
     });
   });
 
+/**
+* Route for password reset page
+*
+* GET attempts to find a user with the token and if the token and user are valid, render the reset form
+* POST posts to reset the password with the token and new password
+**/
 app.route('/reset/:token')
   .get((req, res) => {
     models.User.findOne({ where: { resetPasswordToken: req.params.token, resetPasswordExpires: { [models.Sequelize.Op.gte]: Date.now() } }
@@ -382,7 +426,9 @@ app.route('/reset/:token')
 
 
 
-// route for handling 404 requests
+/**
+* Route for handling 404 erros
+**/
 app.use(function (req, res, next) {
   res.status(404).send("page not found")
 });

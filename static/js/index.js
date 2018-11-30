@@ -30,6 +30,7 @@ $(document).ready(function() {
   });
 })
 
+// method that sends a post request to delete an event
 function deleteEvent() {
 	$(this).parent().remove();
 	$.ajax({
@@ -42,7 +43,7 @@ function deleteEvent() {
 		});
 }
 
-
+// method that sends a post request to delete a todo
 function deleteTodo () {
     $(this).parent().remove();
     $.ajax({
@@ -55,6 +56,7 @@ function deleteTodo () {
 		});
 }
 
+// method that sends a post request to toggle the status of a todo
 function toggleTodo () {
 	if(this.checked) {
 		$(this).parent().addClass("inactive");

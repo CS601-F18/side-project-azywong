@@ -6,7 +6,7 @@
     - npm
     - postgresql
   - look in config.js and set up values to run postgres for the application
-    - you probably need to create a database for the application
+    - you probably need to create a database for the application (I called my todocal)
   - cd into this directory and run
 ```
 npm install
@@ -29,8 +29,9 @@ node app.js
 ### UI
   - calendar shows the current week on login
   - UI is mobile friendly built on a grid system
-  -
+  - front end looks nice
 ### Users
   - User can create an account
   - User can login
   - User can logout
+  - User can reset password via email

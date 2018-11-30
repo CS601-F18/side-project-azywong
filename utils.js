@@ -1,5 +1,10 @@
 var utils = {};
 
+/**
+* utility methods stored here, mainly to do with formatting dates and data
+**/
+
+// method that coverts the  list of todos from the database into a format the front end can easily parse
 utils.orderTodos = function (todos) {
   var orderedTodos = [];
   for (var i = 0; i < todos.length; i++) {
@@ -8,19 +13,23 @@ utils.orderTodos = function (todos) {
   return orderedTodos;
 }
 
+// method that takes in a date as input and returns the full month name
 utils.getMonthName = function (date) {
   return utils.moment(date, 'YYYY-MM-DD').format('MMM');
 }
 
+// method that takes in a date as input and returns the day of the month
 utils.getDateName = function (date) {
   return utils.moment(date, 'YYYY-MM-DD').format('D');
 }
 
+// method that takes in a week in array format and generate header text
 utils.getWeekHeader = function (week) {
   return "Week of " + utils.getMonthName(week[0]) + " " + utils.getDateName(week[0]) + " - " + utils.getMonthName(week[6]) + " " + utils.getDateName(week[6]);
 }
 
-utils.getNewEvents = function (thisWeek){
+// method that that thats a week in array form and returns it in a formatted object
+utils.getFormattedWeek = function (thisWeek){
   var newEvents = {
     header: utils.getWeekHeader(thisWeek),
     monday: {
@@ -63,40 +72,46 @@ utils.getNewEvents = function (thisWeek){
   return newEvents;
 }
 
+// method that takes a list of events and the current week as input and returns a formatted object representing this week and the events for each day
 utils.orderEvents = function (events, thisWeek) {
-  var newEvents = utils.getNewEvents(thisWeek);
+  var formattedEvents = utils.getFormattedWeek(thisWeek);
   for (var i = 0; i < events.length; i++) {
     var event = events[i].dataValues;
     var startdate = utils.moment(event.startdate, 'YYYY-MM-DD').startOf('day');
     var enddate = utils.moment(event.enddate, 'YYYY-MM-DD').startOf('day');
 
-    Object.keys(newEvents).forEach(function (key) {
-      var startdate2 = newEvents[key].startdate;
-      var enddate2 = newEvents[key].enddate;
+    Object.keys(formattedEvents).forEach(function (key) {
+      var startdate2 = formattedEvents[key].startdate;
+      var enddate2 = formattedEvents[key].enddate;
       if(startdate2 && enddate2) {
         if ( startdate.isSameOrBefore(startdate2) && (enddate.isSameOrAfter(enddate2) || enddate.isSameOrAfter(startdate2)) ) {
-          newEvents[key].events.push(event);
+          formattedEvents[key].events.push(event);
         }
       }
     })
   };
-  return newEvents;
+  return formattedEvents;
 }
 
+// method that takes a date as input and returns it in a moment format
 utils.getFormattedDate = function (date) {
   return utils.moment(date, 'YYYY-MM-DD');
 }
 
+// requiring the moment js library
 utils.moment = require('moment')
 
+// method that returns the start of the day for the date in moment format
 utils.getStartDate = function (date) {
   return utils.getFormattedDate(date).startOf('day');
 }
 
+// method that returns the end of the day for the date in moment format
 utils.getEndDate = function (date) {
   return utils.getFormattedDate(date).endOf('day');
 }
 
+// method that returns the current week in array format
 utils.getThisWeek = function () {
   var range = []
   var d = new Date();
