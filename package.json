@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/CS601-F18/side-project-azywong#readme",
   "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
+    "async": "^2.6.1",
     "bcrypt": "^3.0.2",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",

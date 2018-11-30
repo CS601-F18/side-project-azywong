@@ -9,6 +9,19 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING,
             allowNull: false
+        },
+        email: {
+          type: DataTypes.STRING,
+          unique: true,
+          allowNull: false
+        },
+        resetPasswordToken: {
+          type: DataTypes.STRING,
+          allowNull: true
+        },
+        resetPasswordExpires: {
+          type: DataTypes.DATE,
+          allowNull: true
         }
     });
 

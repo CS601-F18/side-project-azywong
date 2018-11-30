@@ -7,7 +7,20 @@ var express      = require('express')
   , models = require('./models/index.js')
   , bcrypt = require('bcrypt')
   , salt = bcrypt.genSaltSync()
-  , utils = require('./utils');
+  , utils = require('./utils')
+  , helper = require('sendgrid').mail
+  , crypto = require('crypto')
+  , async = require("async")
+  , sgMail = require('@sendgrid/mail');
+
+if (process.env.SENGRID_API_KEY == undefined) {
+  console.log("not found")
+  var config = require('./config')
+  sgMail.setApiKey(config.development.sendgrid);
+} else {
+  console.log("found")
+  sgMail.setApiKey(process.env.SENGRID_API_KEY);
+}
 
 var app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -75,6 +88,7 @@ app.route('/signup')
     .post((req, res) => {
         models.User.create({
             username: req.body.username,
+            email: req.body.email,
             password: bcrypt.hashSync(req.body.password, salt)
         })
         .then(user => {
@@ -219,7 +233,6 @@ app.route('/event')
   })
   .post((req, res, next) => {
     if (req.body.startdate && req.body.enddate && req.body.title) {
-      console.log(req.body)
       if( req.body.startdate <= req.body.enddate) {
         models.Event.create({
           startdate: req.body.startdate,
@@ -260,6 +273,113 @@ app.route('/event')
       res.json( { error: "error missing inputs" } );
     }
   });
+
+app.route('/forgot_password')
+  .get((req, res, next) => {
+    res.render('forgot_password', { authenticated: false });
+  })
+  .post((req, res, next) => {
+    // roughly followed http://sahatyalkabov.com/how-to-implement-password-reset-in-nodejs/
+    async.waterfall([
+      function(done) {
+        crypto.randomBytes(20, function(err, buf) {
+          var token = buf.toString('hex');
+          done(err, token);
+        });
+      },
+      function(token, done) {
+        models.User.findOne(
+          { where: { email: req.body.email, username: req.body.username}
+        }).then((user) => {
+          if (!user) {
+            res.render('forgot_password', { authenticated: false, error: "no account found with those details" });
+          }
+
+          user.resetPasswordToken = token;
+          user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+          user.save().catch((error) => {
+            res.render('forgot_password', { authenticated: false, error: "internal issue with generating a password reset, please try again later" });
+          }).then((result) => {
+            var to_email = user.email;
+            var from_email = "minitodocal+passwordreset@gmail.com";
+            var subject = "mini todocal password reset";
+            var content = 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n' + 'Please click on the following link, or paste this into your browser to complete the process:\n\n' + 'http://' + req.headers.host + '/reset/' + token + '\n\n' + 'If you did not request this, please ignore this email and your password will remain unchanged.\n';
+
+            var mail = {
+              to: to_email,
+              from: from_email,
+              subject: subject,
+              text: content
+            }
+            sgMail.send(mail).then((response) => {
+              console.log("response: " + response);
+              res.render('forgot_password', { authenticated: false, error: "Successfully sent reset email" });
+            }).catch((err) => {
+              console.log(err)
+            })
+          }).catch((err) => {
+            console.log(err)
+          })
+        });
+      }
+    ], function(err) {
+      if (err) res.redirect('/forgot_password');
+    });
+  });
+
+app.route('/reset/:token')
+  .get((req, res) => {
+    models.User.findOne({ where: { resetPasswordToken: req.params.token, resetPasswordExpires: { [models.Sequelize.Op.gte]: Date.now() } }
+    }).then((user) => {
+      if(!user) {
+        res.render('forgot_password', { authenticated: false, error: "Password reset token is invalid or has expired." });
+      } else {
+        res.render('reset_password', { authenticated: false, resetPasswordToken: req.params.token });
+      }
+
+    });
+  })
+  .post((req, res) => {
+    models.User.update({
+        password: bcrypt.hashSync(req.body.password, salt),
+        resetPasswordToken: null,
+        resetPasswordExpires:  null
+      },
+      {
+        returning: true,
+        where: {
+          resetPasswordToken: req.params.token,
+          resetPasswordExpires: { [models.Sequelize.Op.gte]: Date.now() }
+        }
+      }).then(([ rowsUpdate, [user] ]) => {
+        if (!user) {
+          res.render('forgot_password', { authenticated: false, error: "Password reset token is invalid or has expired." });
+        }
+        var to_email = user.email
+        var from_email = "minitodocal+passwordreset@gmail.com";
+        var subject = "Your password has been changed";
+        var content = 'This is a confirmation that your password for minitodocal has been changed.';
+
+        var mail = {
+          to: to_email,
+          from: from_email,
+          subject: subject,
+          text: content
+        }
+        sgMail.send(mail).then((response) => {
+          console.log("response: " + response);
+          req.session.user = user.id;
+          res.redirect("/dashboard");
+        }).catch((err) => {
+          console.log(err)
+        })
+    }).catch((error) => {
+      console.log(error)
+      res.render('forgot_password', { authenticated: false, error: "Password reset token is invalid or has expired." });
+    });
+})
+
 
 
 // route for handling 404 requests
