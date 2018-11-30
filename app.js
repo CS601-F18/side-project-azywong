@@ -1,6 +1,6 @@
 var express      = require('express')
   , http         = require('http')
-  , port         = process.argv[2] || 8000
+  , port         = process.env.PORT || 8000
   , bodyParser   = require('body-parser')
   , cookieParser = require('cookie-parser')
   , session      = require('express-session')
