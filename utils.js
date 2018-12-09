@@ -28,10 +28,22 @@ utils.getWeekHeader = function (week) {
   return "Week of " + utils.getMonthName(week[0]) + " " + utils.getDateName(week[0]) + " - " + utils.getMonthName(week[6]) + " " + utils.getDateName(week[6]);
 }
 
+// gets a day of the next week given this week as input
+utils.getNextWeek = function (thisWeek) {
+  return utils.moment(thisWeek[6]).add(1, 'days').format('YYYY-MM-DD');
+}
+
+// gets a day of the previous week given this week as input
+utils.getPreviousWeek = function (thisWeek) {
+  return utils.moment(thisWeek[0]).subtract(1, 'days').format('YYYY-MM-DD');
+}
+
 // method that that thats a week in array form and returns it in a formatted object
-utils.getFormattedWeek = function (thisWeek){
+utils.getFormattedWeek = function (thisWeek) {
   var newEvents = {
     header: utils.getWeekHeader(thisWeek),
+    nextWeekUrl: "/dashboard/" + utils.getNextWeek(thisWeek),
+    previousWeekUrl: "/dashboard/" + utils.getPreviousWeek(thisWeek),
     monday: {
       date: utils.getDateName(thisWeek[0]),
       startdate: utils.getStartDate(thisWeek[0]),
@@ -111,13 +123,10 @@ utils.getEndDate = function (date) {
   return utils.getFormattedDate(date).endOf('day');
 }
 
-// method that returns the current week in array format
-utils.getThisWeek = function () {
+// method that gets the entire week from a single date
+utils.getWeekFromDate = function (dateString) {
   var range = []
-  var d = new Date();
-  var day = utils.moment().startOf('day').fromNow();
-  //https://stackoverflow.com/questions/4156434/javascript-get-the-first-day-of-the-week-from-current-date
-  var startOfPeriod = utils.moment();
+  var startOfPeriod = utils.moment(dateString, "YYYY-MM-DD");
   var begin = utils.moment(startOfPeriod).isoWeekday(1);
   begin.startOf('isoWeek');
 
@@ -126,6 +135,11 @@ utils.getThisWeek = function () {
     begin.add(1, 'd');
   }
   return range;
+}
+
+// method that returns the current week in array format
+utils.getThisWeek = function () {
+  return utils.getWeekFromDate(utils.moment().format('YYYY-MM-DD'));
 }
 
 module.exports = utils;

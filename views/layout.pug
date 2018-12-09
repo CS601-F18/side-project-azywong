@@ -1,55 +1,57 @@
 html
-	head
-		title="Mini TodoCal"
-		meta(charset="utf-8")
-		meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
-		link(rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Raleway:400,300,600")
-		link(rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato")
-		link(rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous")
-		link(rel="stylesheet" type="text/css" href="/css/bootstrap.min.css")
-		link(rel="stylesheet" type="text/css" href="/css/styles.css")
-	body
-		div(class="container")
-			nav
-				ul(class="nav justify-content-end")
-					if authenticated
-						li(class="nav-item")
-							a(class="nav-link active" href="/logout")="logout"
-					else
-						li(class="nav-item")
-							a(class="nav-link active" href="/signup")="signup"
-						li(class="nav-item")
-							a(class="nav-link active" href="/login")="login"
-			if error
-				div(class="row justify-content-md-center")
-					div(class="alert alert-warning alert-dismissible fade show" role="alert")
-						p=error
-						button(type="button" class="close" data-dismiss="alert" aria-label="Close")
-							span(aria-hidden="true")="X"
-			block content
-		div(class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true")
-			div(class="modal-dialog" role="document")
-				div(class="modal-content")
-					div(class="modal-header")
-						h5(class="modal-title" id="addModalLabel")="Add Event"
-					div(class="modal-body")
-						h3="add an event"
-						form(action="/event" method="POST")
-							div(class="form-group")
-								label="event start date"
-								input(type="date" class="form-control" name="startdate" required)
-							div(class="form-group")
-								label="event end date"
-								input(type="date" class="form-control" name="enddate" required)
-							div(class="form-group")
-								label="event title"
-								input(type="text" class="form-control" name="title" placeholder="title" required)
-							div
-								input(type="submit" class="btn btn-primary")
-					div(class="modal-footer")
-						button(type="button" class="btn btn-secondary" data-dismiss="modal")="Close"
+  head
+    title="Mini TodoCal"
+    meta(charset="utf-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no")
+    link(rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Raleway:400,300,600")
+    link(rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato")
+    link(rel="stylesheet" type="text/css" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous")
+    link(rel="stylesheet" type="text/css" href="/css/bootstrap.min.css")
+    link(rel="stylesheet" type="text/css" href="/css/styles.css")
+  body
+    div(class="container")
+      nav
+        ul(class="nav justify-content-end")
+          if authenticated
+            li(class="nav-item")
+              a(class="nav-link active" href="/dashboard")="this week"
+            li(class="nav-item")
+              a(class="nav-link active" href="/logout")="logout"
+          else
+            li(class="nav-item")
+              a(class="nav-link active" href="/signup")="signup"
+            li(class="nav-item")
+              a(class="nav-link active" href="/login")="login"
+      if error
+        div(class="row justify-content-md-center")
+          div(class="alert alert-warning alert-dismissible fade show" role="alert")
+            p=error
+            button(type="button" class="close" data-dismiss="alert" aria-label="Close")
+              span(aria-hidden="true")="X"
+      block content
+    div(class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true")
+      div(class="modal-dialog" role="document")
+        div(class="modal-content")
+          div(class="modal-header")
+            h5(class="modal-title" id="addModalLabel")="Add Event"
+          div(class="modal-body")
+            h3="add an event"
+            form(action="/event" method="POST")
+              div(class="form-group")
+                label="event start date"
+                input(type="date" class="form-control" name="startdate" required)
+              div(class="form-group")
+                label="event end date"
+                input(type="date" class="form-control" name="enddate" required)
+              div(class="form-group")
+                label="event title"
+                input(type="text" class="form-control" name="title" placeholder="title" required)
+              div
+                input(type="submit" class="btn btn-primary")
+          div(class="modal-footer")
+            button(type="button" class="btn btn-secondary" data-dismiss="modal")="Close"
 
-		script(src="js/jquery-3.3.1.min.js")
-		script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous")
-		script(src="js/bootstrap.min.js")
-		script(src="js/index.js")
+    script(src="/js/jquery-3.3.1.min.js")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous")
+    script(src="/js/bootstrap.min.js")
+    script(src="/js/index.js")

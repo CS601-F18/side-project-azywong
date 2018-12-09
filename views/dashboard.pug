@@ -1,88 +1,94 @@
 extends layout.pug
 
 block content
-	if authenticated && todos && events
-		div(class="row")
-			div(class="col-sm-11")
-				h1(class="center-header")=events.header
-		div(class="row")
-			div(class="col-sm-2 day-container")
-				div(class="day" startdate=events.monday.startdate enddate=events.monday.enddate)
-					h2="monday"
-						span(class="date")=events.monday.date
-					each event in events.monday.events
-						div(class="event" id=event.id)
-							button(class='delete')
-								i(class='fas fa-trash-alt')
-							span(class="event-title")=event.title
-								span(class="event-tooltip")=event.title
-				div(class="day" startdate=events.thursday	.startdate enddate=events.thursday.enddate)
-					h2="thursday"
-						span(class="date")=events.thursday.date
-					each event in events.thursday.events
-						div(class="event" id=event.id)
-							button(class='delete')
-								i(class='fas fa-trash-alt')
-							span(class="event-title")=event.title
-								span(class="event-tooltip")=event.title
-			div(class="col-sm-2 day-container")
-				div(class="day" startdate=events.thursday.startdate enddate=events.thursday.enddate)
-					h2="tuesday"
-						span(class="date")=events.tuesday.date
-					each event in events.tuesday.events
-						div(class="event" id=event.id)
-							button(class='delete')
-								i(class='fas fa-trash-alt')
-							span(class="event-title")=event.title
-								span(class="event-tooltip")=event.title
-				div(class="day" startdate=events.friday.startdate enddate=events.friday.enddate)
-					h2="friday"
-						span(class="date")=events.friday.date
-					each event in events.friday.events
-						div(class="event" id=event.id)
-							button(class='delete')
-								i(class='fas fa-trash-alt')
-							span(class="event-title")=event.title
-								span(class="event-tooltip")=event.title
-			div(class="col-sm-2 day-container")
-				div(class="day" startdate=events.wednesday.startdate enddate=events.wednesday.enddate)
-					h2="wednesday"
-						span(class="date")=events.wednesday.date
-					each event in events.wednesday.events
-						div(class="event" id=event.id)
-							button(class='delete')
-								i(class='fas fa-trash-alt')
-							span(class="event-title")=event.title
-								span(class="event-tooltip")=event.title
-				div(class="day" startdate=events.weekend.startdate enddate=events.weekend.enddate)
-					h2="weekend"
-						span(class="date")=events.weekend.date
-					each event in events.weekend.events
-						div(class="event" id=event.id)
-							button(class='delete')
-								i(class='fas fa-trash-alt')
-							span(class="event-title")=event.title
-								span(class="event-tooltip")=event.title
-			div(class="col-sm-5")
-				div(class="todo-list")
-					h2="todo list"
-					div(class="todo-form")
-						form(action="/todo" method="post")
-							input(type="text" name="todo-item" placeholder="new todo item...")
-					each todo in todos
-						if todo.checked
-							div(class='todo-item inactive' todoId=todo.id)
-								input(type='checkbox' checked=todo.checked)
-								span=todo.description
-								button(class='delete')
-									i(class='fas fa-trash-alt')
-						else
-							div(class='todo-item' todoId=todo.id)
-								input(type='checkbox' checked=todo.checked)
-								span=todo.description
-								button(class='delete')
-									i(class='fas fa-trash-alt')
+  if authenticated && todos && events
+    div(class="row")
+      div(class="col-sm-1")
+        a(href=events.previousWeekUrl class="arrow")
+          i(class='fas fa-2x fa-arrow-alt-circle-left')
+      div(class="col-sm-9")
+        h1(class="center-header")=events.header
+      div(class="col-sm-1")
+        a(href=events.nextWeekUrl class="arrow")
+          i(class='fas fa-2x fa-arrow-alt-circle-right')
+    div(class="row")
+      div(class="col-sm-2 day-container")
+        div(class="day" startdate=events.monday.startdate enddate=events.monday.enddate)
+          h2="monday"
+            span(class="date")=events.monday.date
+          each event in events.monday.events
+            div(class="event" id=event.id)
+              button(class='delete')
+                i(class='fas fa-trash-alt')
+              span(class="event-title")=event.title
+                span(class="event-tooltip")=event.title
+        div(class="day" startdate=events.thursday .startdate enddate=events.thursday.enddate)
+          h2="thursday"
+            span(class="date")=events.thursday.date
+          each event in events.thursday.events
+            div(class="event" id=event.id)
+              button(class='delete')
+                i(class='fas fa-trash-alt')
+              span(class="event-title")=event.title
+                span(class="event-tooltip")=event.title
+      div(class="col-sm-2 day-container")
+        div(class="day" startdate=events.thursday.startdate enddate=events.thursday.enddate)
+          h2="tuesday"
+            span(class="date")=events.tuesday.date
+          each event in events.tuesday.events
+            div(class="event" id=event.id)
+              button(class='delete')
+                i(class='fas fa-trash-alt')
+              span(class="event-title")=event.title
+                span(class="event-tooltip")=event.title
+        div(class="day" startdate=events.friday.startdate enddate=events.friday.enddate)
+          h2="friday"
+            span(class="date")=events.friday.date
+          each event in events.friday.events
+            div(class="event" id=event.id)
+              button(class='delete')
+                i(class='fas fa-trash-alt')
+              span(class="event-title")=event.title
+                span(class="event-tooltip")=event.title
+      div(class="col-sm-2 day-container")
+        div(class="day" startdate=events.wednesday.startdate enddate=events.wednesday.enddate)
+          h2="wednesday"
+            span(class="date")=events.wednesday.date
+          each event in events.wednesday.events
+            div(class="event" id=event.id)
+              button(class='delete')
+                i(class='fas fa-trash-alt')
+              span(class="event-title")=event.title
+                span(class="event-tooltip")=event.title
+        div(class="day" startdate=events.weekend.startdate enddate=events.weekend.enddate)
+          h2="weekend"
+            span(class="date")=events.weekend.date
+          each event in events.weekend.events
+            div(class="event" id=event.id)
+              button(class='delete')
+                i(class='fas fa-trash-alt')
+              span(class="event-title")=event.title
+                span(class="event-tooltip")=event.title
+      div(class="col-sm-5")
+        div(class="todo-list")
+          h2="todo list"
+          div(class="todo-form")
+            form(action="/todo" method="post")
+              input(type="text" name="todo-item" placeholder="new todo item...")
+          each todo in todos
+            if todo.checked
+              div(class='todo-item inactive' todoId=todo.id)
+                input(type='checkbox' checked=todo.checked)
+                span=todo.description
+                button(class='delete')
+                  i(class='fas fa-trash-alt')
+            else
+              div(class='todo-item' todoId=todo.id)
+                input(type='checkbox' checked=todo.checked)
+                span=todo.description
+                button(class='delete')
+                  i(class='fas fa-trash-alt')
 
-			div(class="col-sm-1 add")
-				button(type="button" class="btn" data-toggle="modal" data-target="#addModal")
-					i(class="fas fa-3x fa-plus-circle")
+      div(class="col-sm-1 add")
+        button(type="button" class="btn" data-toggle="modal" data-target="#addModal")
+          i(class="fas fa-3x fa-plus-circle")

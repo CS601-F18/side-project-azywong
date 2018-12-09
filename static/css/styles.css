@@ -107,3 +107,10 @@ h1.center-header {
 	width: 100%;
 	text-align: center;
 }
+
+.arrow {
+  color: tomato;
+}
+.arrow:hover {
+  color: salmon;
+}
