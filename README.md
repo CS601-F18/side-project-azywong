@@ -42,12 +42,14 @@ node app.js
   - autheticated user can mark a todo that belongs to them as checked off
   - autheticated user can delete a todo that belongs to them
   - autheticated user can view a list of all their todos
+  - adding, deleting, or checking off a todo stays on the same calendar week
 ### Events
   - authenticated user can add an event to their calendar
   - authenticated user can see their events for the current week
   - authenticated user can delete an event that belongs to them
   - user can navigate to the previous week in dashboard
   - user can navigate to the next week in dashboard
+  - posting a new event on a date's dashboard page now goes back to that date, not the default today dash
 ### UI
   - calendar shows the current week on login
   - UI is mobile friendly built on a grid system
