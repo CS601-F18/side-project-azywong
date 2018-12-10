@@ -6,7 +6,6 @@ module.exports = {
       if (req.session.user && req.cookies.user_sid) {
 
         var thisWeek = utils.getThisWeek();
-        console.log("thisWeek: " + thisWeek);
 
         models.Todo.findAll({ where: { UserId: req.session.user } }).then(function (todos) {
           models.Event.findAll(
@@ -30,12 +29,10 @@ module.exports = {
     getDatedDash: function (req, res) {
       if (req.session.user && req.cookies.user_sid) {
         if (req.params.date) {
-          var thisWeek = utils.getWeekFromDate(req.params.date)
+          var thisWeek = utils.getWeekFromDate(req.params.date);
         } else {
           res.redirect("/dashboard");
         }
-        console.log("req.params.date: " + req.params.date);
-        console.log("thisWeek: " + thisWeek);
 
         models.Todo.findAll({ where: { UserId: req.session.user } }).then(function (todos) {
           models.Event.findAll(
