@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+* auto generated index by sequelize
+* loads in each model file found into the db variable which we then export for later use
+**/
+
 var fs        = require('fs');
 var path      = require('path');
 var Sequelize = require('sequelize');

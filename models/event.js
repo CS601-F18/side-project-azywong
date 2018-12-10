@@ -1,4 +1,7 @@
 'use strict';
+/**
+* model that represents a calendar event in the application
+**/
 module.exports = (sequelize, DataTypes) => {
     var Event = sequelize.define('Event', {
         startdate: {

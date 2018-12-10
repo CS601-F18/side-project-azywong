@@ -4,6 +4,7 @@ $(document).ready(function() {
   $(".todo-item button").click(deleteTodo);
   $(".event .delete").click(deleteEvent);
 
+  // handles submitting a new todo
   $(".todo-form form").submit(function (e) {
     e.preventDefault();
     var text = $(".todo-form input[type=text]").val().trim();
@@ -24,7 +25,7 @@ $(document).ready(function() {
 
 
 
-    //clear input
+    // clear input
     $(".todo-form input[type=text]").val("");
   });
 })

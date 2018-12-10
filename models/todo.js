@@ -1,4 +1,7 @@
 'use strict';
+/**
+* model that represents a todo item in the application
+**/
 module.exports = (sequelize, DataTypes) => {
     var Todo = sequelize.define('Todo', {
         checked: {
